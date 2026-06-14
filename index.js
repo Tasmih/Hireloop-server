@@ -277,7 +277,28 @@ async function run() {
       res.send(plan)
     })
 
-   
+    // subscription
+    app.post('/api/subscriptions', async (req, res) => {
+      const data = req.body;
+
+      const subsInfo = {
+        ...data,
+        createdAt: new Date()
+      }
+
+      const result = await subscriptionCollection.insertOne(subsInfo);
+
+      const filter = { email: data.email };
+
+      const updateDocument = {
+        $set: {
+          plan: data.planId,
+        },
+      };
+
+      const updateResult = await usersCollection.updateOne(filter, updateDocument);
+      res.send(updateResult)
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
